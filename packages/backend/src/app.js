@@ -139,6 +139,25 @@ app.put('/api/tasks/:id', (req, res) => {
   }
 });
 
+// PUT /api/items/:id (edit) - alias maintained for backward compatibility with older frontend references
+app.put('/api/items/:id', (req, res) => {
+  try {
+    const { title, description, due_date, priority } = req.body;
+    if (!title || typeof title !== 'string' || title.trim() === '') {
+      return res.status(400).json({ error: 'Task title is required' });
+    }
+    const normalizedPriority = ['P1','P2','P3'].includes(priority) ? priority : 'P3';
+    const stmt = db.prepare('UPDATE tasks SET title = ?, description = ?, due_date = ?, priority = ? WHERE id = ?');
+    const result = stmt.run(title.trim(), description || '', due_date || null, normalizedPriority, req.params.id);
+    if (result.changes === 0) return res.status(404).json({ error: 'Task not found' });
+    const updatedTask = db.prepare('SELECT * FROM tasks WHERE id = ?').get(req.params.id);
+    res.json(updatedTask);
+  } catch (error) {
+    console.error('Error updating task (items alias):', error);
+    res.status(500).json({ error: 'Failed to update task' });
+  }
+});
+
 // PATCH /api/tasks/:id (mark complete/incomplete)
 app.patch('/api/tasks/:id', (req, res) => {
   try {

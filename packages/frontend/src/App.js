@@ -4,14 +4,17 @@ import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import TaskList from './TaskList';
 import TaskForm from './TaskForm';
 
+// Central priority enumeration referenced by UI and update logic
+const PRIORITIES = ['P1','P2','P3'];
+
 function App() {
   const [editingTask, setEditingTask] = useState(null);
   const [refreshKey, setRefreshKey] = useState(0);
 
   const handleSave = async (task) => {
     if (editingTask) {
-      // Edit existing task
-      await fetch(`/api/tasks/${editingTask.id}`, {
+      // Edit existing task (use items alias for backward compatibility)
+      await fetch(`/api/items/${editingTask.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(task)
@@ -69,7 +72,7 @@ function App() {
           }}
         >
           <Box sx={{ mb: 2, flexShrink: 0 }}>
-            <TaskForm onSave={handleSave} initialTask={editingTask} />
+            <TaskForm onSave={handleSave} initialTask={editingTask} priorities={PRIORITIES} />
           </Box>
           <Box sx={{ flexGrow: 1, minHeight: 0, overflow: 'hidden' }}>
             <TaskList key={refreshKey} onEdit={setEditingTask} />
