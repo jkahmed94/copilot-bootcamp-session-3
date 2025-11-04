@@ -8,7 +8,7 @@ afterAll(() => {
 describe('Tasks API', () => {
   let taskId;
 
-  it('should create a new task', async () => {
+  it('should create a new task with default priority P3', async () => {
     const res = await request(app)
       .post('/api/tasks')
       .send({ title: 'Test Task', description: 'A test task', due_date: '2025-09-30' });
@@ -18,6 +18,7 @@ describe('Tasks API', () => {
     expect(res.body.description).toBe('A test task');
     expect(res.body.due_date).toBe('2025-09-30');
     expect(res.body.completed).toBe(0);
+    expect(res.body.priority).toBe('P3');
     taskId = res.body.id;
   });
 
@@ -34,14 +35,23 @@ describe('Tasks API', () => {
     expect(res.body.id).toBe(taskId);
   });
 
-  it('should update a task', async () => {
+  it('should update a task and set priority P1', async () => {
     const res = await request(app)
       .put(`/api/tasks/${taskId}`)
-      .send({ title: 'Updated Task', description: 'Updated', due_date: '2025-10-01' });
+      .send({ title: 'Updated Task', description: 'Updated', due_date: '2025-10-01', priority: 'P1' });
     expect(res.status).toBe(200);
     expect(res.body.title).toBe('Updated Task');
     expect(res.body.description).toBe('Updated');
     expect(res.body.due_date).toBe('2025-10-01');
+    expect(res.body.priority).toBe('P1');
+  });
+
+  it('should fallback invalid priority value to P3', async () => {
+    const res = await request(app)
+      .put(`/api/tasks/${taskId}`)
+      .send({ title: 'Updated Task', description: 'Still Updated', due_date: '2025-10-02', priority: 'PX' });
+    expect(res.status).toBe(200);
+    expect(res.body.priority).toBe('P3');
   });
 
   it('should mark a task as completed', async () => {

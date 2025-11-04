@@ -5,6 +5,7 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import EventIcon from '@mui/icons-material/Event';
+import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
 
 function TaskList({ onEdit }) {
   const [tasks, setTasks] = useState([]);
@@ -203,6 +204,33 @@ function TaskList({ onEdit }) {
                 gap: 1
               }}
             >
+              {task.priority && (
+                <Chip
+                  icon={<PriorityHighIcon sx={{ fontSize: 14 }} />}
+                  label={task.priority}
+                  size="small"
+                  aria-label={`Priority ${task.priority}`}
+                  sx={{
+                    height: 20,
+                    fontSize: '0.7rem',
+                    fontWeight: 600,
+                    letterSpacing: '0.5px',
+                    ...(task.priority === 'P1' && {
+                      background: '#d32f2f',
+                      color: 'white'
+                    }),
+                    ...(task.priority === 'P2' && {
+                      background: '#ff9800',
+                      color: 'white'
+                    }),
+                    ...(task.priority === 'P3' && {
+                      background: '#9e9e9e',
+                      color: 'white'
+                    }),
+                    '& .MuiChip-icon': { color: 'white' }
+                  }}
+                />
+              )}
               {task.due_date && (
                 <Chip
                   icon={<EventIcon sx={{ fontSize: 14 }} />}
